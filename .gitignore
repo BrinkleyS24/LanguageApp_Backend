@@ -1,0 +1,23 @@
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userprefs
+*.docstates
+
+# Build output
+bin/
+obj/
+
+# NuGet
+packages/
+
+# Node.js dependencies
+node_modules/
+
+# Rider files
+.idea/
+
+# Temporary files
+*.tmp
+*.log
