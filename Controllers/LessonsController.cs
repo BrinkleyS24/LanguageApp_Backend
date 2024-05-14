@@ -11,97 +11,97 @@ using backend.Models;
 namespace backend.Controllers
 {
     [ApiController]
-[Route("api/[controller]")]
-public class LessonsController : ControllerBase
-{
-    private readonly AppDbContext _context;
-
-    public LessonsController(AppDbContext context)
+    [Route("api/[controller]")]
+    public class LessonsController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    // GET: api/Lessons
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Lesson>>> GetLessons()
-    {
-        return await _context.Lessons.ToListAsync();
-    }
-
-    // GET: api/Lessons/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Lesson>> GetLesson(int id)
-    {
-        var lesson = await _context.Lessons.FindAsync(id);
-
-        if (lesson == null)
+        public LessonsController(AppDbContext context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        return lesson;
-    }
-
-    // POST: api/Lessons
-    [HttpPost]
-    public async Task<ActionResult<Lesson>> PostLesson(Lesson lesson)
-    {
-        _context.Lessons.Add(lesson);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetLesson), new { id = lesson.Id }, lesson);
-    }
-
-    // PUT: api/Lessons/5
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutLesson(int id, Lesson lesson)
-    {
-        if (id != lesson.Id)
+        // GET: api/Lessons
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Lesson>>> GetLessons()
         {
-            return BadRequest();
+            return await _context.Lessons.ToListAsync();
         }
 
-        _context.Entry(lesson).State = EntityState.Modified;
+        // GET: api/Lessons/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Lesson>> GetLesson(int id)
+        {
+            var lesson = await _context.Lessons.FindAsync(id);
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!LessonExists(id))
+            if (lesson == null)
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+
+            return lesson;
         }
 
-        return NoContent();
-    }
-
-    // DELETE: api/Lessons/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteLesson(int id)
-    {
-        var lesson = await _context.Lessons.FindAsync(id);
-        if (lesson == null)
+        // POST: api/Lessons
+        [HttpPost]
+        public async Task<ActionResult<Lesson>> PostLesson(Lesson lesson)
         {
-            return NotFound();
+            _context.Lessons.Add(lesson);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetLesson), new { id = lesson.Id }, lesson);
         }
 
-        _context.Lessons.Remove(lesson);
-        await _context.SaveChangesAsync();
+        // PUT: api/Lessons/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutLesson(int id, Lesson lesson)
+        {
+            if (id != lesson.Id)
+            {
+                return BadRequest();
+            }
 
-        return NoContent();
-    }
+            _context.Entry(lesson).State = EntityState.Modified;
 
-    private bool LessonExists(int id)
-    {
-        return _context.Lessons.Any(e => e.Id == id);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!LessonExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/Lessons/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteLesson(int id)
+        {
+            var lesson = await _context.Lessons.FindAsync(id);
+            if (lesson == null)
+            {
+                return NotFound();
+            }
+
+            _context.Lessons.Remove(lesson);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool LessonExists(int id)
+        {
+            return _context.Lessons.Any(e => e.Id == id);
+        }
     }
-}
 
 }
