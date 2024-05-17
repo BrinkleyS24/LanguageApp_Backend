@@ -34,14 +34,10 @@ namespace MyProject.Controllers
 
             try
             {
-                // Log the response content for debugging
-                System.Console.WriteLine($"Response Content: {result}");
 
                 // Parse the JSON response
                 var parsedResult = JObject.Parse(result);
-                System.Console.WriteLine($"Response parsed: {parsedResult}");
-
-                // Assuming the response already contains the language and confidence directly
+                
                 var language = parsedResult["Language"]?.ToString();
                 var confidence = parsedResult["Confidence"]?.ToObject<double>();
 

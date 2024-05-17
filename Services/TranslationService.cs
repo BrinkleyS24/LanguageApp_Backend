@@ -2,7 +2,7 @@ using RestSharp;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-
+using dotenv.net;
 
 namespace MyProject.Services
 {
@@ -12,10 +12,18 @@ namespace MyProject.Services
 
         public TranslationService()
         {
+            DotEnv.Load();
+            var apiKey = Environment.GetEnvironmentVariable("API_KEY");
+            if (apiKey == null)
+            {
+                throw new InvalidOperationException("API key is missing. Please check your environment variables.");
+            }
+
             _client = new RestClient("https://deep-translate1.p.rapidapi.com");
-            _client.AddDefaultHeader("x-rapidapi-key", "0be3b540a1msh34ab91e9a1fed08p179c4bjsn32fec098fe80");
+            _client.AddDefaultHeader("x-rapidapi-key", apiKey);
             _client.AddDefaultHeader("x-rapidapi-host", "deep-translate1.p.rapidapi.com");
         }
+
 
         public async Task<string?> DetectLanguageAsync(string text)
         {
@@ -26,8 +34,6 @@ namespace MyProject.Services
                 request.AddParameter("application/json", JsonConvert.SerializeObject(new { q = text }), ParameterType.RequestBody);
 
                 var response = await _client.ExecuteAsync(request);
-
-                Console.WriteLine($"Response Content: {response.Content}");
 
                 if (response.IsSuccessful && !string.IsNullOrEmpty(response.Content))
                 {
@@ -103,6 +109,7 @@ namespace MyProject.Services
                                     languageNames.Add(languageName);
                                 }
                             }
+
 
                             return response.Content;
                         }
