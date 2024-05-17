@@ -4,9 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using backend.Data;
+using MyProject.Services;
+using MyProject.Data;
 
-namespace backend
+namespace MyProject
 {
     public class Startup
     {
@@ -17,50 +18,38 @@ namespace backend
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add controllers and views
-            services.AddControllersWithViews();
+            services.AddControllers();
+            services.AddDbContext<MyDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<ITranslationService, TranslationService>();
 
-            // Add Entity Framework Core
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            // Configure HTTPS redirection
-            services.AddHttpsRedirection(options =>
+            // Add CORS policy if needed
+            services.AddCors(options =>
             {
-                options.HttpsPort = 5001; // Specify the HTTPS port here
+                options.AddPolicy("AllowAll",
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseRouting();
+
+            // Apply CORS policy
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
         }
     }
